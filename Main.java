@@ -1,71 +1,88 @@
-package com.gla.interfaces.problem7;
+package com.gla.interfaces.problem6;
 
-import java.io.Serializable;
+// 1. Payment Gateway Integration
+interface PaymentProcessor {
+    void processPayment(double amount);
 
-// 1. Serializable (Existing)
-class BackupData implements Serializable {
-    String data = "Important Data";
+    default void refund(double amount) {
+        System.out.println("Refund of " + amount + " processed.");
+    }
 }
 
-// 2. Cloneable (Existing)
-class Prototype implements Cloneable {
-    String name;
+class PayPal implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        System.out.println("PayPal payment: " + amount);
+    }
+}
 
-    public Prototype(String name) {
-        this.name = name;
+// 2. Data Export Feature
+interface DataExporter {
+    void export();
+
+    default void exportToJSON() {
+        System.out.println("Exporting to JSON...");
+    }
+}
+
+class Report implements DataExporter {
+    @Override
+    public void export() {
+        System.out.println("Exporting data...");
+    }
+}
+
+// 3. Smart Vehicle Dashboard
+interface Vehicle {
+    void displaySpeed();
+
+    default void displayBattery() {
+        System.out.println("Battery display not supported for this vehicle.");
+    }
+}
+
+class ElectricCar implements Vehicle {
+    @Override
+    public void displaySpeed() {
+        System.out.println("Speed: 100 km/h");
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public void displayBattery() {
+        System.out.println("Battery: 85%");
     }
 }
 
-// 3. Custom Marker Interface
-interface SensitiveData {
-}
-
-class UserCredentials implements SensitiveData {
-    String username;
-    String password;
-
-    public UserCredentials(String u, String p) {
-        this.username = u;
-        this.password = p;
-    }
-}
-
-class DataProcessor {
-    void process(Object obj) {
-        if (obj instanceof SensitiveData) {
-            System.out.println("Processing Encrypted Data...");
-        } else {
-            System.out.println("Processing Normal Data...");
-        }
+class PetrolCar implements Vehicle {
+    @Override
+    public void displaySpeed() {
+        System.out.println("Speed: 120 km/h");
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        // 1. Serialization check
-        BackupData bd = new BackupData();
-        if (bd instanceof Serializable) {
-            System.out.println("BackupData is Serializable.");
-        }
+        // 1. Payment
+        PaymentProcessor pp = new PayPal();
+        pp.processPayment(100);
+        pp.refund(50);
 
-        // 2. Cloning
-        try {
-            Prototype p1 = new Prototype("Original");
-            Prototype p2 = (Prototype) p1.clone();
-            System.out.println("Cloned Object Name: " + p2.name);
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+        System.out.println("---");
 
-        // 3. Sensitive Data
-        DataProcessor dp = new DataProcessor();
-        UserCredentials creds = new UserCredentials("admin", "1234");
-        dp.process(creds);
-        dp.process("Just a string");
+        // 2. Data Export
+        DataExporter de = new Report();
+        de.export();
+        de.exportToJSON();
+
+        System.out.println("---");
+
+        // 3. Vehicle
+        Vehicle ev = new ElectricCar();
+        ev.displaySpeed();
+        ev.displayBattery();
+
+        Vehicle pv = new PetrolCar();
+        pv.displaySpeed();
+        pv.displayBattery();
     }
 }
